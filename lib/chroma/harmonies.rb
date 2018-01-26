@@ -108,11 +108,22 @@ module Chroma
 
       h, s, v = @color.hsv
       modification = 1.0 / size
+      palette = []
 
-      palette = size.times.map do
-        Color.new(ColorModes::Hsv.new(h, s, v), @color.format).tap do
+      size.times do
+        color = Color.new(ColorModes::Hsv.new(h, s, v), @color.format).tap do
           v = (v + modification) % 1
         end
+
+        unless color == @color
+          palette << color
+        end
+      end
+
+      palette << @color
+
+      if options[:sort] == :desc
+        palette.reverse!
       end
 
       with_reformat(palette, options[:as])
